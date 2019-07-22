@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+  <title>What is this</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.0/mapbox-gl.css' rel='stylesheet' />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <style>
+    #mar {
+      background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Flag_of_the_Republic_of_China.svg/1200px-Flag_of_the_Republic_of_China.svg.png');
+      background-size: cover;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    #marker {
+      background-image: url('https://nationalinterest.org/sites/default/files/styles/desktop__1260_/public/main_images/China_airforce_J-10.jpg?itok=x7fMWs_e');
+      background-size: cover;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    #marker2 {
+      background-image: url('https://imgc.allpostersimages.com/img/print/posters/winnie-the-pooh_a-G-2073101-0.jpg?w=609&h=985');
+      background-size: cover;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+
+
+    .mapboxgl-popup {
+      max-width: 200px;
+    }
+
+    .coordinates {
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      position: absolute;
+      bottom: 40px;
+      left: 10px;
+      padding: 5px 10px;
+      margin: 0;
+      font-size: 11px;
+      line-height: 18px;
+      border-radius: 3px;
+      display: none;
+    }
+  </style>
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.min.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.1/mapbox-gl-geocoder.css' type='text/css' />
+  <div id='map'></div>
+  <pre id='coordinates' class='coordinates'></pre>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoidGltbGluOTAxMjIyIiwiYSI6ImNqeTgybmF3dTA1cjczb3QxeTV4NWYwODUifQ.4qlvqSfgWqRrhfRoh3Chuw';
+    var coordinates = document.getElementById('coordinates');
+    var monument = [120.9675, 24.8138];
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/light-v10',
+      center: monument,
+      zoom: 3.5
+    });
+
+    var n1 = document.createElement('div');
+    n1.id = 'mar'
+    var n2 = document.createElement('div');
+    n2.id = 'marker';
+    var n3 = document.createElement('div');
+    n3.id = 'marker2'
+    var marker = new mapboxgl.Marker(n1, {
+        //draggable: false
+        draggable: true
+      })
+      .setLngLat(monument)
+      .setPopup(new mapboxgl.Popup({
+          offset: 5
+        })
+        .setHTML('<p>Taiwan number 1 </p>'))
+      .addTo(map);
+
+    var marker2 = new mapboxgl.Marker(n2)
+    var marker3 = new mapboxgl.Marker(n3)
+      .setLngLat([116.4074, 39.9042])
+      .addTo(map)
+
+    function onDragEnd() {
+      var lngLat = marker.getLngLat();
+      coordinates.style.display = 'block';
+      coordinates.innerHTML = 'Longitude: ' + lngLat.lng + '<br />Latitude: ' + lngLat.lat;
+    }
+
+    function animateMarker(timestamp) {
+      var radius = 13;
+
+      // Update the data to a new position based on the animation timestamp. The
+      // divisor in the expression `timestamp / 1000` controls the animation speed.
+      marker2.setLngLat([
+        (Math.cos((timestamp / 500)) * (radius / 2)) + 120.9675,
+        (Math.sin((timestamp / 500)) * (radius / 2)) + 24.8138
+      ]);
+      // sets a popup on this marker
+      // Ensure it's added to the map. This is safe to call if it's already added.
+      marker2.addTo(map);
+
+      // Request the next frame of the animation.
+      requestAnimationFrame(animateMarker);
+    }
+    requestAnimationFrame(animateMarker);
+
+
+    marker.on('dragend', onDragEnd);
+    map.addControl(new mapboxgl.FullscreenControl());
+    map.addControl(new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken,
+      mapboxgl: mapboxgl
+    }));
+    map.addControl(new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true
+      },
+      trackUserLocation: true
+    }));
+  </script>
+
+</body>
+
+</html>
